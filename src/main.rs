@@ -40,6 +40,7 @@ fn main() {
 
         // a place to put the cursor position
         let pos = Rc::new(RefCell::new((100.0, 100.0)));
+        let last_button = Rc::new(RefCell::new(1u32));
         let size= Rc::new(RefCell::new(50.0));
 
         // a surface to store the drawn image
@@ -99,7 +100,7 @@ fn main() {
 
         // define what happens when button press events are triggered
         drawing_area.connect_button_press_event(
-            clone!(@strong pos, @strong surface_cr, @strong size => move|drawing_area, event_button|{
+            clone!(@strong pos, @strong surface_cr, @strong size, @strong last_button => move|drawing_area, event_button|{
                 let mut pos = pos.borrow_mut();
                 *pos = event_button.get_position();
                 let button = event_button.get_button();
@@ -113,23 +114,25 @@ fn main() {
                     surface_cr.arc(pos.0, pos.1, *size.borrow(), 0.0, PI*2.0);
                     surface_cr.fill();
                 }
+                *last_button.borrow_mut() = button;
                 drawing_area.queue_draw(); // force redraw of the drawing area
                 Inhibit(false)
         }));
         
         // define what happens when motion events are triggered
         drawing_area.connect_motion_notify_event(
-            clone!(@strong pos, @strong surface_cr, @strong size => move |drawing_area, event_motion|{
+            clone!(@strong pos, @strong surface_cr, @strong size, @strong last_button => move |drawing_area, event_motion|{
                 let old_pos = *pos.borrow();
                 let mut pos = pos.borrow_mut();
                 *pos = event_motion.get_position();
                 let state = event_motion.get_state();
-                if state.contains(ModifierType::BUTTON1_MASK) { // left mouse button
+                if *last_button.borrow() == 1 && state.contains(ModifierType::BUTTON1_MASK) { // left mouse button
                     surface_cr.set_source_rgb(0.94921875, 0.56640625, 0.53515625);
                     surface_cr.arc(pos.0, pos.1, *size.borrow(), 0.0, PI*2.0);
                     surface_cr.fill();
                     interpolate(&surface_cr, old_pos.0,old_pos.1,pos.0,pos.1,*size.borrow());
-                } else if state.contains(ModifierType::BUTTON3_MASK) { //right mouse button
+                }
+                if *last_button.borrow() == 3 && state.contains(ModifierType::BUTTON3_MASK) { //right mouse button
                     surface_cr.set_source_rgb(0.015625, 0.39453125, 0.5078125);
                     surface_cr.arc(pos.0, pos.1, *size.borrow(), 0.0, PI*2.0);
                     surface_cr.fill();
