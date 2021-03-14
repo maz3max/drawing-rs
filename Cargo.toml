@@ -1,0 +1,17 @@
+[package]
+name = "drawing"
+version = "0.1.0"
+authors = ["Maximilian Deubel <maximilian.deubel@gmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+gtk = "0.9.2"
+gio = "0.9.1"
+gdk = "0.13.2"
+glib = "0.10.3"
+
+[dependencies.cairo-rs]
+version = "0.9.1"
+features = ["png"]
