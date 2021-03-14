@@ -1,5 +1,5 @@
 use cairo::{self, Context, ImageSurface};
-use gdk::{EventMask, ModifierType};
+use gdk::{Cursor, CursorType, EventMask, ModifierType};
 use gio::prelude::*;
 use gtk::{prelude::*, DrawingArea, FileChooserExt, ResponseType, WidgetExt};
 use std::f64::consts::PI;
@@ -117,14 +117,16 @@ fn main() {
             }),
         );
 
-        window.add(&drawing_area);
-        window.show_all();
-
+        window.connect_realize(|app_window|{
+            let gdk_window = app_window.get_window();
         // hide cursor if we can
-        let gdk_win = window.get_window();
-        if let Some(gdk_win) = gdk_win {
-            gdk_win.set_cursor(None);
+            // also try to get more motion events if possible
+            if let Some(gdk_window) = gdk_window {
+                let cursor = Cursor::new(CursorType::BlankCursor);
+                gdk_window.set_cursor(Some(&cursor));
+                gdk_window.set_event_compression(false);
         }
+        });
 
         // save on ctrl-s
         window.add_events(EventMask::KEY_PRESS_MASK);
@@ -162,6 +164,9 @@ fn main() {
                 Inhibit(false)
             }),
         );
+
+        window.add(&drawing_area);
+        window.show_all();
     });
     application.run(&[]);
 }
