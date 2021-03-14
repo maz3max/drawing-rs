@@ -1,16 +1,15 @@
 use cairo::{self, Context, ImageSurface};
 use gdk::{EventMask, ModifierType};
 use gio::prelude::*;
-use gtk::{DrawingArea, FileChooserExt, ResponseType, WidgetExt, prelude::*};
+use gtk::{prelude::*, DrawingArea, FileChooserExt, ResponseType, WidgetExt};
 use std::f64::consts::PI;
 
 use gdk::WindowExt;
 use glib::clone;
 use gtk::{Application, ApplicationWindow};
 use std::cell::RefCell;
-use std::rc::Rc;
 use std::fs::File;
-
+use std::rc::Rc;
 
 const H: i32 = 500;
 const W: i32 = 500;
