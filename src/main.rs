@@ -70,7 +70,28 @@ fn main() {
                 | EventMask::BUTTON1_MOTION_MASK // mouse drag (left button)
                 | EventMask::BUTTON3_MOTION_MASK, // mouse drag (right button)
         );
-        // define what happens when those events are triggered
+
+        // define what happens when button press events are triggered
+        drawing_area.connect_button_press_event(
+            clone!(@strong pos, @strong surface_cr => move|drawing_area, event_button|{
+                let mut pos = pos.borrow_mut();
+                *pos = event_button.get_position();
+                let button = event_button.get_button();
+                if button == 1 { // left mouse button
+                    surface_cr.set_source_rgb(0.94921875, 0.56640625, 0.53515625);
+                    surface_cr.arc(pos.0, pos.1, 10.0, 0.0, PI*2.0);
+                    surface_cr.fill();
+                }
+                if button == 3 { //right mouse button
+                    surface_cr.set_source_rgb(0.015625, 0.39453125, 0.5078125);
+                    surface_cr.arc(pos.0, pos.1, 10.0, 0.0, PI*2.0);
+                    surface_cr.fill();
+                }
+                drawing_area.queue_draw(); // force redraw of the drawing area
+                Inhibit(false)
+        }));
+        
+        // define what happens when motion events are triggered
         drawing_area.connect_motion_notify_event(
             clone!(@strong pos, @strong surface_cr => move |drawing_area, event_motion|{
                 let old_pos = *pos.borrow();
