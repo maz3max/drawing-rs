@@ -100,14 +100,11 @@ fn main() {
                 let state = event_motion.get_state();
                 if state.contains(ModifierType::BUTTON1_MASK) { // left mouse button
                     surface_cr.set_source_rgb(0.94921875, 0.56640625, 0.53515625);
-                    surface_cr.arc(old_pos.0, old_pos.1, 10.0, 0.0, PI*2.0);
                     surface_cr.arc(pos.0, pos.1, 10.0, 0.0, PI*2.0);
                     surface_cr.fill();
                     interpolate(&surface_cr, old_pos.0,old_pos.1,pos.0,pos.1);
-                }
-                if state.contains(ModifierType::BUTTON3_MASK) { //right mouse button
+                } else if state.contains(ModifierType::BUTTON3_MASK) { //right mouse button
                     surface_cr.set_source_rgb(0.015625, 0.39453125, 0.5078125);
-                    surface_cr.arc(old_pos.0, old_pos.1, 10.0, 0.0, PI*2.0);
                     surface_cr.arc(pos.0, pos.1, 10.0, 0.0, PI*2.0);
                     surface_cr.fill();
                     interpolate(&surface_cr, old_pos.0,old_pos.1,pos.0,pos.1);
@@ -119,13 +116,13 @@ fn main() {
 
         window.connect_realize(|app_window|{
             let gdk_window = app_window.get_window();
-        // hide cursor if we can
+            // hide cursor if we can
             // also try to get more motion events if possible
             if let Some(gdk_window) = gdk_window {
                 let cursor = Cursor::new(CursorType::BlankCursor);
                 gdk_window.set_cursor(Some(&cursor));
                 gdk_window.set_event_compression(false);
-        }
+            }
         });
 
         // save on ctrl-s
